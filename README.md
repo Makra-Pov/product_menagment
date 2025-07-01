@@ -25,7 +25,7 @@ product_crud_app/
 ## 🌐 API Base URL
 
 ```
-http://192.168.1.198:3030
+http://localhost:3030
 ```
 
 > ⚠️ Replace with your actual IP address if testing on a different network.
