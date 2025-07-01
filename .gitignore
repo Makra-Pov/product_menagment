@@ -11,30 +11,21 @@ backend/node_modules/
 /backend/.env.*.local
 /backend/.env
 
-# Flutter Frontend
-/frontend/.dart_tool/
-/frontend/.flutter-plugins
-/frontend/.flutter-plugins-dependencies
-/frontend/.packages
-/frontend/.pub-cache/
-/frontend/.pub/
-/frontend/build/
-/frontend/ios/Flutter/App.framework
-/frontend/ios/Flutter/Flutter.framework
-/frontend/ios/Flutter/Generated.xcconfig
-/frontend/ios/Runner.xcworkspace
-/frontend/ios/Runner.xcodeproj/project.xcworkspace
-/frontend/android/.gradle/
-/frontend/android/app/build/
-/frontend/android/app/release/
-/frontend/android/app/debug/
-/frontend/android/local.properties
-/frontend/android/*.keystore
-/frontend/android/*.jks
-/frontend/web/favicon.png
-/frontend/web/icons/
-/frontend/web/manifest.json
-/frontend/web/index.html
+# Flutter
+/frontend/product_app/.dart_tool/
+/frontend/product_app/.idea/
+/frontend/product_app/.packages
+/frontend/product_app/.flutter-plugins
+/frontend/product_app/.flutter-plugins-dependencies
+/frontend/product_app/.metadata
+/frontend/product_app/build/
+/frontend/product_app/linux/
+/frontend/product_app/macos/
+/frontend/product_app/web/
+/frontend/product_app/windows/
+/frontend/product_app/.DS_Store
+/frontend/product_app/pubspec.lock
+
 
 # Editor and IDE files
 .idea/
