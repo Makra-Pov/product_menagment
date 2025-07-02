@@ -2,15 +2,58 @@ const sql = require("mssql");
 const config = require("../db/config");
 
 exports.getAllProducts = async (req, res) => {
+  const { page = 1, limit = 10, search = '', sort = '' } = req.query;
+
+
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+  const offset = (pageNum - 1) * limitNum;
+
   try {
-    await sql.connect(config);
-    const result = await sql.query`SELECT * FROM PRODUCTS`;
-    res.json(result.recordset);
+    const pool = await sql.connect(config);
+
+    let whereClause = '';
+    let orderByClause = '';
+
+    const searchParam = search ? `%${search}%` : '%';
+
+    if (search) {
+      whereClause = `WHERE PRODUCTNAME LIKE @search`;
+    }
+
+   
+    const validSortColumns = ['price', 'stock'];
+    orderByClause = validSortColumns.includes(sort.toLowerCase())
+      ? `ORDER BY ${sort.toUpperCase()}`
+      : `ORDER BY PRODUCTID DESC`;
+
+    
+    const query = `
+      SELECT COUNT(*) AS total FROM PRODUCTS ${whereClause};
+      SELECT * FROM PRODUCTS ${whereClause} ${orderByClause} OFFSET ${offset} ROWS FETCH NEXT ${limitNum} ROWS ONLY;
+    `;
+    
+
+    const result = await pool.request()
+      .input('search', sql.NVarChar, searchParam)
+      .query(query);
+
+    const totalItems = result.recordsets[0][0].total;
+    const products = result.recordsets[1];
+
+    res.json({
+      products,
+      pagination: {
+        totalItems,
+        currentPage: pageNum,
+        totalPages: Math.ceil(totalItems / limitNum),
+      },
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 exports.getProductById = async (req, res) => {
   const id = req.params.id;
   try {

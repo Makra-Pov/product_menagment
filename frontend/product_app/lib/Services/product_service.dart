@@ -2,21 +2,60 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:product_app/Models/product_models.dart';
 
-
 class ProductService {
-  static  String baseUrl = "http://192.168.1.198:3000";
+  //localhost URL for testing on web
+  // static String baseUrl = "http://localhost:3000";
+  // Base URL for the physical device 
+  static String baseUrl = "http://192.168.1.198:3000";
 
-   Future<List<ProductModel>> getAllProducts() async {
+  Future<PaginatedProducts> getAllProductUnpaginate() async {
     final response = await http.get(Uri.parse('$baseUrl/products'));
-
     if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((item) => ProductModel.fromJson(item)).toList();
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return PaginatedProducts.fromJson(data);
     } else {
-      throw Exception('Failed to load products');
+      throw Exception('Failed to load products: ${response.statusCode}');
     }
   }
 
+  Future<PaginatedProducts> getAllProducts({
+    required int page,
+    required int limit,
+    String search = '',
+    String sort = '',
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/products').replace(
+        queryParameters: {
+          'page': page.toString(),
+          'limit': limit.toString(),
+          if (search.isNotEmpty) 'search': search,
+          if (sort.isNotEmpty) 'sort': sort,
+        },
+      );
+
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        // Map backend pagination fields to model fields
+        final adjustedJson = {
+          'products': json['products'],
+          'pagination': {
+            'currentPage': json['pagination']['currentPage'],
+            'pageSize': limit, 
+            'totalCount': json['pagination']['totalItems'], 
+            'totalPages': json['pagination']['totalPages'],
+          },
+        };
+        return PaginatedProducts.fromJson(adjustedJson);
+      } else {
+        throw Exception('Failed to fetch products: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching products: $e');
+    }
+  }
   Future<ProductModel> getProductById(int id) async {
     final response = await http.get(Uri.parse('$baseUrl/products/$id'));
 
@@ -27,7 +66,7 @@ class ProductService {
     }
   }
 
-  static Future<void> createProduct(ProductModel product) async {
+  Future<void> createProduct(ProductModel product) async {
     final response = await http.post(
       Uri.parse('$baseUrl/products'),
       headers: {'Content-Type': 'application/json'},
@@ -61,6 +100,7 @@ class ProductService {
 
   Future<void> deleteProduct(int id) async {
     final response = await http.delete(
+      
       Uri.parse('$baseUrl/products/$id'),
     );
 

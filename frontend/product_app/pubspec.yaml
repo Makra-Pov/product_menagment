@@ -20,6 +20,7 @@ dependencies:
   provider: ^6.1.5
   decimal: ^3.2.4
   http: ^1.4.0
+  connectivity_plus: ^6.0.1
 
   
     
