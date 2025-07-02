@@ -129,6 +129,102 @@ node server.js
 API will run on: [http://localhost:3030/products](http://localhost:3030/products)
 
 ---
+## 🔌 API Endpoints
+
+All endpoints are prefixed with:
+
+```
+http://<your-server-ip>:3030/products
+```
+
+Replace `<your-server-ip>` with your actual IP or `localhost` for local development.
+
+---
+
+### 📄 GET /products
+
+Get a paginated list of products.
+
+**Query Parameters:**
+- `page` (required): Page number (e.g. `1`)
+- `pageSize` (optional): Number of items per page (default: 10)
+- `search` (optional): Filter products by name (e.g. `mouse`)
+- `sort` (optional): Sort by `price` or `stock`
+
+**Example:**
+```
+GET /products?page=1&pageSize=10&search=mouse&sort=price
+```
+
+**Response:**
+```json
+{
+  "products": [ ... ],
+  "pagination": {
+    "totalItems": 50,
+    "currentPage": 1,
+    "totalPages": 5
+  }
+}
+```
+
+---
+
+### 📄 GET /products/:id
+
+Get a single product by ID.
+
+**Example:**
+```
+GET /products/5
+```
+
+---
+
+### ➕ POST /products
+
+Create a new product.
+
+**Body (JSON):**
+```json
+{
+  "PRODUCTNAME": "New Item",
+  "PRICE": 19.99,
+  "STOCK": 100
+}
+```
+
+---
+
+### 📝 PUT /products/:id
+
+Update an existing product.
+
+**Example:**
+```
+PUT /products/5
+```
+
+**Body (JSON):**
+```json
+{
+  "PRODUCTNAME": "Updated Item",
+  "PRICE": 29.99,
+  "STOCK": 75
+}
+```
+
+---
+
+### ❌ DELETE /products/:id
+
+Delete a product by ID.
+
+**Example:**
+```
+DELETE /products/5
+```
+
 
 ## 💻 Frontend Setup (`/frontend/product_app`)
 
